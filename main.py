@@ -29,7 +29,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.Slider2.valueChanged.connect(self.update_label_text)
         self.ui.Slider3.valueChanged.connect(self.update_label_text)
         self.ui.applyButton.clicked.connect(self.apply_changes)
-        self.cahnge_lables()
+        self.ui.clearButton.clicked.connect(self.clear)
+        self.change_labels()
         self.handle_hough_sliders()
         self.load_ui_elements()
 
@@ -57,22 +58,17 @@ class MainWindow(QtWidgets.QMainWindow):
             [self.create_image_viewport(self.ui_out_ports[i], mouse_double_click_event_handler=None) for i in range(2)])
 
         # Initialize import buttons
-        self.import_buttons = [self.ui.importButton, self.ui.importButton_2,]
+        self.import_buttons = [self.ui.importButton, self.ui.importButton_2]
 
         # Bind browse_image function to import buttons
         self.bind_buttons(self.import_buttons, self.browse_image)
 
-        # Initialize clear buttons
-        self.clear_buttons = [self.ui.clearButton, self.ui.clearButton_2]
-
-        # Bind clear function to clear buttons
-        self.bind_buttons(self.clear_buttons, self.clear)
-
         # Initialize reset buttons
-        self.reset_buttons = [self.ui.resetButton, self.ui.resetButton_2,]
+        self.reset_buttons = [self.ui.resetButton, self.ui.resetButton_2]
 
         # Bind reset_image function to reset buttons
         self.bind_buttons(self.reset_buttons, self.reset_image)
+
 
     def bind_buttons(self, buttons, function):
         """
@@ -85,113 +81,144 @@ class MainWindow(QtWidgets.QMainWindow):
         Returns:
             None
         """
-        if len(buttons) == 5:
-            for i, button in enumerate(buttons):
-                button.clicked.connect(lambda event, index=i: function(event, index))
-        else:
-            for i, button in enumerate(buttons):
-                button.clicked.connect(lambda index=i: function(index))
+        for i, button in enumerate(buttons):
+            button.clicked.connect(lambda event, index=i: function(event, index))
 
 
     def apply_changes(self):
+        """
+        This function applies the changes to the images based on the current index of the Hough Transform combobox.
+        """
         current_index = self.ui.hough_comboBox.currentIndex()
 
         if current_index == 0:
+            # HoughLinesP
             self.apply_lineHough()
+
         elif current_index == 1:
+            # HoughCircles
             self.apply_circleHough()
+
         elif current_index == 2:
+            # HoughEllipse
             self.apply_ellipseHough()
 
 
     def handle_hough_combobox(self):
         """
-        This function handles the Hough Transform combobox.
+        Handle the Hough Transform combobox change.
+
+        This function is called when the user selects a different item from the Hough
+        Transform combobox. It updates the labels and sliders based on the new selection.
         """
         self.cahnge_lables()
         self.handle_hough_sliders()
 
-    def cahnge_lables(self):
+
+    def change_labels(self):
         """
-        This function changes the labels based on the Hough Transform.
+        Changes the labels based on the Hough Transform.
+
+        This function updates the labels on the user interface when the user
+        selects a different item from the Hough Transform combobox.
         """
-        # time.sleep(0.5)
         current_index = self.ui.hough_comboBox.currentIndex()
 
         if current_index == 0:
-            self.ui.label1.setText("Rho")
-            self.ui.label2.setText("Theta")
-            self.ui.label3.hide()
+            # For HoughLinesP
+            self.ui.label1.setText("Rho")  # Label for rho
+            self.ui.label2.setText("Theta")  # Label for theta
+            self.ui.label3.hide()  # Hide the label for min_dist
 
         elif current_index == 1:
-            self.ui.label1.setText("minRadius")
-            self.ui.label2.setText("maxRadius")
-            self.ui.label3.setText("minDist")
-            self.ui.label3.show()
+            # For HoughCircles
+            self.ui.label1.setText("Min Radius")  # Label for min_radius
+            self.ui.label2.setText("Max Radius")  # Label for max_radius
+            self.ui.label3.setText("Min Dist")  # Label for min_dist
+            self.ui.label3.show()  # Show the label for min_dist
 
         else:
-            self.ui.label1.setText("minAxis")
-            self.ui.label2.setText("maxAxis")
-            self.ui.label3.hide()
+            # For HoughEllipse
+            self.ui.label1.setText("Min Axis")  # Label for min_axis
+            self.ui.label2.setText("Max Axis")  # Label for max_axis
+            self.ui.label3.hide()  # Hide the label for min_dist
+
 
     def handle_hough_sliders(self):
+        """
+        Handles the visibility of the third Hough slider based on the selected
+        item from the Hough Transform combobox.
+
+        If the selected item is HoughLinesP or HoughEllipse, the third slider
+        is hidden, otherwise it's shown.
+        """
         combo_idex = self.ui.hough_comboBox.currentIndex()
         print(combo_idex)
-        if combo_idex == 0 or combo_idex == 2:
-            self.ui.Slider3.hide()
-            self.ui.slider3_val.hide()
-        else:
-            self.ui.Slider3.show()
-            self.ui.slider3_val.show()
+        if combo_idex == 0 or combo_idex == 2:  # HoughLinesP or HoughEllipse
+            self.ui.Slider3.hide()  # Hide the third slider
+            self.ui.slider3_val.hide()  # Hide the label for min_dist
+        else:  # HoughCircles
+            self.ui.Slider3.show()  # Show the third slider
+            self.ui.slider3_val.show()  # Show the label for min_dist
 
-        self.sliders_limits()
+        self.sliders_limits()  # Set the limits for the sliders
+
 
     def sliders_limits(self):
+        """
+        This function sets the limits for the sliders based on the selected item
+        from the Hough Transform combobox.
 
-            self.ui.threshSlider.setMinimum(1)  # Set minimum value for Threshold
-            self.ui.threshSlider.setMaximum(100)  # Set maximum value for Threshold
-            self.ui.threshSlider.setValue(1)  # Set initial value for Threshold
+        The limits are set to the following values:
+            - Threshold: 1 - 100
+            - HoughLinesP: rho: 1 - 10, theta: 1 - 180
+            - HoughCircles and HoughEllipses: min_radius: 1 - 100,
+                                             max_radius: 1 - 100,
+                                             min_dist: 1 - 100
+        """
+        current_index = self.ui.hough_comboBox.currentIndex()
 
-            # For HoughLinesP
-            self.ui.label1.setText("Rho")
+        self.ui.threshSlider.setMinimum(1)  # Set minimum value for Threshold
+        self.ui.threshSlider.setMaximum(100)  # Set maximum value for Threshold
+        self.ui.threshSlider.setValue(1)  # Set initial value for Threshold
+
+        # For HoughLinesP
+        if current_index == 0:
+            # "Rho"
             self.ui.Slider1.setMinimum(1)  # Set minimum value for Rho
             self.ui.Slider1.setMaximum(10)  # Set maximum value for Rho
             self.ui.Slider1.setValue(1)  # Set initial value for Rho
 
-            self.ui.label2.setText("Theta")
+            # "Theta"
             self.ui.Slider2.setMinimum(1)  # Set minimum value for Theta
             self.ui.Slider2.setMaximum(180)  # Set maximum value for Theta
             self.ui.Slider2.setValue(1)  # Set initial value for Theta
 
-            # For HoughCircles
-            self.ui.label1.setText("minRadius")
-            self.ui.Slider1.setMinimum(1)  # Set minimum value for minRadius
-            self.ui.Slider1.setMaximum(100)  # Set maximum value for minRadius
-            self.ui.Slider1.setValue(1)  # Set initial value for minRadius
+        # For HoughCircles and HoughEllipses
+        if current_index == 1 or current_index == 2:
 
-            self.ui.label2.setText("maxRadius")
-            self.ui.Slider2.setMinimum(1)  # Set minimum value for maxRadius
-            self.ui.Slider2.setMaximum(100)  # Set maximum value for maxRadius
-            self.ui.Slider2.setValue(1)  # Set initial value for maxRadius
+            self.ui.Slider1.setMinimum(1)  # Set minimum value for min_radius
+            self.ui.Slider1.setMaximum(100)  # Set maximum value for min_radius
+            self.ui.Slider1.setValue(1)  # Set initial value for min_radius
 
-            self.ui.label3.setText("minDist")
-            self.ui.Slider3.setMinimum(1)  # Set minimum value for minDist
-            self.ui.Slider3.setMaximum(100)  # Set maximum value for minDist
-            self.ui.Slider3.setValue(1)  # Set initial value for minDist
+            self.ui.Slider2.setMinimum(1)  # Set minimum value for max_radius
+            self.ui.Slider2.setMaximum(100)  # Set maximum value for max_radius
+            self.ui.Slider2.setValue(1)  # Set initial value for max_radius
 
-            # For HoughEllipse
-            self.ui.label1.setText("minAxis")
-            self.ui.Slider1.setMinimum(1)  # Set minimum value for minAxis
-            self.ui.Slider1.setMaximum(100)  # Set maximum value for minAxis
-            self.ui.Slider1.setValue(1)  # Set initial value for minAxis
-
-            self.ui.label2.setText("maxAxis")
-            self.ui.Slider2.setMinimum(1)  # Set minimum value for maxAxis
-            self.ui.Slider2.setMaximum(100)  # Set maximum value for maxAxis
-            self.ui.Slider2.setValue(1)  # Set initial value for maxAxis
+            self.ui.Slider3.setMinimum(1)  # Set minimum value for min_dist
+            self.ui.Slider3.setMaximum(100)  # Set maximum value for min_dist
+            self.ui.Slider3.setValue(1)  # Set initial value for min_dist
 
 
     def update_label_text(self):
+        """
+        Updates the label text based on the current value of the sliders.
+
+        This function is connected to the slider valueChanged signal,
+        and is called whenever the value of a slider changes.
+        It updates the text of the label next to the slider to display
+        the current value of the slider.
+        """
         current_index = self.ui.hough_comboBox.currentIndex()
         # For Threshold
         threshold_value = self.ui.threshSlider.value()
@@ -242,18 +269,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Check if the image path is valid and the index is within the range of input ports
         if self.image_path and 0 <= index < len(self.input_ports):
-            # Check if the index is for the last viewport in the hybrid tab
-            if index == 4:
-                # Set the image for the last hybrid viewport
-                input_port = self.input_ports[index]
-                output_port = self.out_ports[index]
-                input_port.set_image(self.image_path)
-                output_port.set_image(self.image_path, grey_flag=True)
-            # Show the image on all viewports except the last hybrid viewport
-            else:
-                for _, (input_port, output_port) in enumerate(zip(self.input_ports[:-1], self.out_ports[:-1])):
-                    input_port.set_image(self.image_path)
-                    output_port.set_image(self.image_path, grey_flag=True)
+
+            # Set the image for the last hybrid viewport
+            input_port = self.input_ports[index]
+            output_port = self.out_ports[index]
+            input_port.set_image(self.image_path)
+            output_port.set_image(self.image_path, grey_flag=True)
+
 
 
 
@@ -296,15 +318,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clear(self, index: int):
         """
-        Clear all the input and output ports.
+        Clear the specifed input and output ports.
 
         Args:
             index (int): The index of the port to clear.
         """
-        for _, (input_port, output_port) in enumerate(zip(self.input_ports[:-1], self.out_ports[:-1])):
-            input_port.clear()  # Clear the input port
-            output_port.clear()  # Clear the output port
-        self.clear_histographs()  # Clear the histographs
+
+        self.input_ports[index].clear()
+        self.out_ports[index].clear()
 
 
     def reset_image(self, index: int):
@@ -319,7 +340,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.out_ports[index].set_image(self.image_path, grey_flag=True)
 
 
-
     def apply_lineHough(self):
         pass
 
@@ -330,8 +350,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def apply_ellipseHough(self):
         pass
-
-
 
 
 
