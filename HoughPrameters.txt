@@ -1,0 +1,21 @@
+Line Hough Transform:
+-------------------------------------------
+Rho (ρ): The distance resolution in pixels of the Hough grid. It determines the accuracy of the detected lines' positions.
+Theta (θ): The angular resolution in radians of the Hough grid. It defines the precision of the detected lines' orientations.
+Threshold: A threshold value that determines the minimum number of votes (usually intersections in the Hough grid) 
+a candidate line must receive to be considered as a detected line.
+
+Circle Hough Transform:
+--------------------------------------------------
+minRadius: Minimum circle radius.
+maxRadius: Maximum circle radius.
+minDist: The minimum distance between the centers of detected circles.
+Threshold: Similar to the line Hough Transform, it's a threshold value for the minimum number of votes required for a candidate circle to be detected.
+
+
+Ellipse Hough Transform:
+-----------------------------------------------
+Center (x, y): Similar to circles, ellipses have a center point.
+Major Axis (a): The length of the major axis of the ellipse.
+Minor Axis (b): The length of the minor axis of the ellipse.
+Threshold: Just like the other Hough Transforms, a threshold value to determine the minimum number of votes required for a candidate ellipse to be detected.

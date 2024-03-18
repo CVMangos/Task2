@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/arrow-drop-down.png</file>
+    <file>icons/arrow-drop-down-big-svgrepo-com.png</file>
+    <file>icons/clear-circle-svgrepo-com (1).png</file>
+    <file>icons/clear-circle-svgrepo-com.png</file>
+    <file>icons/image-layer-svgrepo-com.png</file>
+    <file>icons/reset-svgrepo-com (1).png</file>
+    <file>icons/reset-svgrepo-com.png</file>
+    <file>icons/upload-square-svgrepo-com (1).png</file>
+    <file>icons/upload-square-svgrepo-com.png</file>
+  </qresource>
+</RCC>
