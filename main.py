@@ -24,7 +24,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Image Processing ToolBox")
         self.setWindowIcon(QIcon("icons/image-layer-svgrepo-com.png"))
         self.ui.hough_comboBox.currentIndexChanged.connect(self.handle_hough_combobox)
-        self.ui.threshSlider.valueChanged.connect(self.update_label_text)
+        self.ui.smoothingSlider.valueChanged.connect(self.update_label_text)
+        self.ui.t_low.valueChanged.connect(self.update_label_text)
+        self.ui.t_high.valueChanged.connect(self.update_label_text)
         self.ui.Slider1.valueChanged.connect(self.update_label_text)
         self.ui.Slider2.valueChanged.connect(self.update_label_text)
         self.ui.Slider3.valueChanged.connect(self.update_label_text)
@@ -111,7 +113,7 @@ class MainWindow(QtWidgets.QMainWindow):
         This function is called when the user selects a different item from the Hough
         Transform combobox. It updates the labels and sliders based on the new selection.
         """
-        self.cahnge_lables()
+        self.change_labels()
         self.handle_hough_sliders()
 
 
@@ -129,6 +131,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.label1.setText("Rho")  # Label for rho
             self.ui.label2.setText("Theta")  # Label for theta
             self.ui.label3.hide()  # Hide the label for min_dist
+            self.ui.label4.hide() 
+            self.ui.label5.hide()  
 
         elif current_index == 1:
             # For HoughCircles
@@ -136,12 +140,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.label2.setText("Max Radius")  # Label for max_radius
             self.ui.label3.setText("Min Dist")  # Label for min_dist
             self.ui.label3.show()  # Show the label for min_dist
+            self.ui.label4.hide() 
+            self.ui.label5.hide() 
 
         else:
             # For HoughEllipse
-            self.ui.label1.setText("Min Axis")  # Label for min_axis
-            self.ui.label2.setText("Max Axis")  # Label for max_axis
-            self.ui.label3.hide()  # Hide the label for min_dist
+            self.ui.label1.setText("Label")  
+            self.ui.label2.setText("Label")  
+            self.ui.label3.setText("Label")  
+            self.ui.label4.setText("Label")  
+            self.ui.label5.setText("Label")  
+            self.ui.label3.show()  
+            self.ui.label4.show() 
+            self.ui.label5.show() 
 
 
     def handle_hough_sliders(self):
@@ -154,12 +165,27 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         combo_idex = self.ui.hough_comboBox.currentIndex()
         print(combo_idex)
-        if combo_idex == 0 or combo_idex == 2:  # HoughLinesP or HoughEllipse
+        if combo_idex == 0:  # HoughLinesP or HoughEllipse
             self.ui.Slider3.hide()  # Hide the third slider
             self.ui.slider3_val.hide()  # Hide the label for min_dist
+            self.ui.Slider4.hide() 
+            self.ui.slider4_val.hide()  
+            self.ui.Slider5.hide() 
+            self.ui.slider5_val.hide() 
+        elif combo_idex == 1: 
+            self.ui.Slider3.show()  # Hide the third slider
+            self.ui.slider3_val.show()  # Hide the label for min_dist
+            self.ui.Slider4.hide() 
+            self.ui.slider4_val.hide()  
+            self.ui.Slider5.hide() 
+            self.ui.slider5_val.hide()  
         else:  # HoughCircles
             self.ui.Slider3.show()  # Show the third slider
             self.ui.slider3_val.show()  # Show the label for min_dist
+            self.ui.Slider4.show() 
+            self.ui.slider4_val.show()  
+            self.ui.Slider5.show() 
+            self.ui.slider5_val.show() 
 
         self.sliders_limits()  # Set the limits for the sliders
 
@@ -178,9 +204,17 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
 
-        self.ui.threshSlider.setMinimum(1)  # Set minimum value for Threshold
-        self.ui.threshSlider.setMaximum(100)  # Set maximum value for Threshold
-        self.ui.threshSlider.setValue(1)  # Set initial value for Threshold
+        self.ui.smoothingSlider.setMinimum(1)  # Set minimum value for Threshold
+        self.ui.smoothingSlider.setMaximum(100)  # Set maximum value for Threshold
+        self.ui.smoothingSlider.setValue(1)  # Set initial value for Threshold
+
+        self.ui.t_low.setMinimum(1) 
+        self.ui.t_low.setMaximum(100) 
+        self.ui.t_low.setValue(1)
+
+        self.ui.t_high.setMinimum(1)  
+        self.ui.t_high.setMaximum(100) 
+        self.ui.t_high.setValue(1) 
 
         # For HoughLinesP
         if current_index == 0:
@@ -221,8 +255,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
         # For Threshold
-        threshold_value = self.ui.threshSlider.value()
-        self.ui.slider0_val.setText(f"{threshold_value}")
+        smoothing_value = self.ui.smoothingSlider.value()
+        self.ui.smoothing_val.setText(f"{smoothing_value}")
+
+        t_low = self.ui.t_low.value()
+        self.ui.t_low_val.setText(f"{t_low}")
+
+        t_high = self.ui.t_high.value()
+        self.ui.t_high_val.setText(f"{t_high}")
 
         if current_index == 0:
             # For HoughLinesP
