@@ -1953,7 +1953,7 @@ QPushButton:pressed {
              </layout>
             </item>
             <item row="0" column="3" rowspan="2">
-             <widget class="QPushButton" name="medianFilter_3">
+             <widget class="QPushButton" name="applyContour">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -2340,7 +2340,7 @@ background-color: #1c2973;
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="resetButton_2">
+                 <widget class="QPushButton" name="resetContour">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
