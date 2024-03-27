@@ -3,10 +3,10 @@ from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import QVBoxLayout, QFileDialog
 from PyQt6.QtGui import QIcon
 import sys
-import pyqtgraph as pg
-import time
 from imageViewPort import ImageViewport
 from functools import partial
+import numpy as np
+
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -32,6 +32,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.Slider3.valueChanged.connect(self.update_label_text)
         self.ui.applyButton.clicked.connect(self.apply_changes)
         self.ui.clearButton.clicked.connect(self.clear)
+        self.ui.applyContour.clicked.connect(self.apply_activeContour)
+        self.ui.resetContour.clicked.connect(self.reset_activeContour)
         self.change_labels()
         self.handle_hough_sliders()
         self.load_ui_elements()
@@ -66,7 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bind_buttons(self.import_buttons, self.browse_image)
 
         # Initialize reset buttons
-        self.reset_buttons = [self.ui.resetButton, self.ui.resetButton_2]
+        self.reset_buttons = [self.ui.resetButton]
 
         # Bind reset_image function to reset buttons
         self.bind_buttons(self.reset_buttons, self.reset_image)
@@ -315,7 +317,8 @@ class MainWindow(QtWidgets.QMainWindow):
             output_port = self.out_ports[index]
             input_port.set_image(self.image_path)
             output_port.set_image(self.image_path, grey_flag=True)
-
+            input_port.clear_points()
+            output_port.clear_points()
 
 
 
@@ -380,6 +383,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.out_ports[index].set_image(self.image_path, grey_flag=True)
 
 
+    def reset_activeContour(self):
+        input_port = self.input_ports[1]
+        output_port = self.out_ports[1]
+        input_port.clear_points()
+        output_port.clear_points()
+
+
+
     def apply_lineHough(self):
         pass
 
@@ -391,7 +402,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def apply_ellipseHough(self):
         pass
 
-
+    def apply_activeContour(self):
+        points = self.out_ports[1].get_freehand_points()
+        # print(f"Points: {points}")
+        xs = [point[0] for point in points]
+        ys = [point[1] for point in points]
+        # print(f"Xs: {xs}", f"Ys: {ys}")
 
 def main():
     app = QtWidgets.QApplication([])
