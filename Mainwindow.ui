@@ -1886,7 +1886,7 @@ QPushButton:pressed {
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_2"/>
+               <widget class="QLineEdit" name="window_size"/>
               </item>
              </layout>
             </item>
@@ -1917,7 +1917,7 @@ QPushButton:pressed {
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_3"/>
+               <widget class="QLineEdit" name="points_number"/>
               </item>
              </layout>
             </item>
@@ -1948,7 +1948,7 @@ QPushButton:pressed {
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_4"/>
+               <widget class="QLineEdit" name="iterations"/>
               </item>
              </layout>
             </item>
@@ -2054,7 +2054,7 @@ background-color: #1c2973;
                </spacer>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_8"/>
+               <widget class="QLineEdit" name="alpha_"/>
               </item>
              </layout>
             </item>
@@ -2101,7 +2101,7 @@ background-color: #1c2973;
                </spacer>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_9"/>
+               <widget class="QLineEdit" name="beta_"/>
               </item>
              </layout>
             </item>
@@ -2132,7 +2132,7 @@ background-color: #1c2973;
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit_7"/>
+               <widget class="QLineEdit" name="gamma_"/>
               </item>
              </layout>
             </item>

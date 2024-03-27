@@ -409,19 +409,20 @@ class MainWindow(QtWidgets.QMainWindow):
         xs = [point[0] for point in points]
         ys = [point[1] for point in points]
         # print(f"Xs: {xs}", f"Ys: {ys}")
-        # hyper params need to be passed here TODO: the getters of the hyper params
-        # TODO: get the image array
-        alpha = 0.1*25
-        beta = 100
-        gamma = 2
-        iterations = 100
-        img = self.input_ports[1].resized_image
-        print(img)
+        #TODO: valudate null 
+        alpha = float(self.ui.alpha_.text())
+        beta = float(self.ui.beta_.text())
+        gamma = float(self.ui.gamma_.text())
+        iterations = int(self.ui.iterations.text())
+        
+        img = self.input_ports[1].resized_img
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         fx, fy = snake_utils.create_external_edge_force_gradients_from_img( img )
+        x,y = snake_utils.initialize_snake()
         # contour coordinates
         xx,yy = snake_utils.iterate_snake(
-            x = xs,
-            y = ys,
+            x = x,
+            y = y,
             a = alpha,
             b = beta,
             fx = fx,
@@ -430,9 +431,11 @@ class MainWindow(QtWidgets.QMainWindow):
             n_iters = iterations,
             return_all = False
         )
-        plt.imshow(img)
-        plt.plot(xx, yy, color='red')
-        plt.show()
+        
+
+
+
+
 
 
 def main():
