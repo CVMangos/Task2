@@ -6,7 +6,8 @@ import sys
 from imageViewPort import ImageViewport
 from functools import partial
 import numpy as np
-
+import snake.snake2 as snake_utils
+import matplotlib.pyplot as plt
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -408,6 +409,31 @@ class MainWindow(QtWidgets.QMainWindow):
         xs = [point[0] for point in points]
         ys = [point[1] for point in points]
         # print(f"Xs: {xs}", f"Ys: {ys}")
+        # hyper params need to be passed here TODO: the getters of the hyper params
+        # TODO: get the image array
+        alpha = 0.1*25
+        beta = 100
+        gamma = 2
+        iterations = 100
+        img = self.input_ports[1].resized_image
+        print(img)
+        fx, fy = snake_utils.create_external_edge_force_gradients_from_img( img )
+        # contour coordinates
+        xx,yy = snake_utils.iterate_snake(
+            x = xs,
+            y = ys,
+            a = alpha,
+            b = beta,
+            fx = fx,
+            fy = fy,
+            gamma = gamma,
+            n_iters = iterations,
+            return_all = False
+        )
+        plt.imshow(img)
+        plt.plot(xx, yy, color='red')
+        plt.show()
+
 
 def main():
     app = QtWidgets.QApplication([])

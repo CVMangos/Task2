@@ -163,27 +163,27 @@ def iterate_snake(x, y, a, b, fx, fy, gamma=0.1, n_iters=10, return_all=True):
 
 
 
-pth = "snake/coin-png-500x501_5e76a44c_transparent_202166.png.png"
-img = load_img(pth)
+# pth = "/home/mohamed/Documents/GitHub/Task2/snake/WhatsApp Image 2023-03-24 at 10.31.58 PM.jpeg"
+# img = load_img(pth)
 
-alpha = 0.1*25
-beta = 100
-gamma = 2
-iterations = 100
-x,y = initialize_snake()
-# fx and fy are callable functions
-fx, fy = create_external_edge_force_gradients_from_img( img )
-xx,yy = iterate_snake(
-    x = x,
-    y = y,
-    a = alpha,
-    b = beta,
-    fx = fx,
-    fy = fy,
-    gamma = gamma,
-    n_iters = iterations,
-    return_all = False
-)
-plt.imshow(img)
-plt.plot(xx, yy, color='red')
-plt.show()
+# alpha = 0.1*25
+# beta = 100
+# gamma = 2
+# iterations = 100
+# x,y = initialize_snake()
+# # fx and fy are callable functions
+# fx, fy = create_external_edge_force_gradients_from_img( img )
+# xx,yy = iterate_snake(
+#     x = x,
+#     y = y,
+#     a = alpha,
+#     b = beta,
+#     fx = fx,
+#     fy = fy,
+#     gamma = gamma,
+#     n_iters = iterations,
+#     return_all = False
+# )
+# plt.imshow(img)
+# plt.plot(xx, yy, color='red')
+# plt.show()
