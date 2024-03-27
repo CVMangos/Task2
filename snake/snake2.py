@@ -163,7 +163,7 @@ def iterate_snake(x, y, a, b, fx, fy, gamma=0.1, n_iters=10, return_all=True):
 
 
 
-pth = "coin-png-500x501_5e76a44c_transparent_202166.png.png"
+pth = "/home/mohamed/Documents/GitHub/Task2/snake/WhatsApp Image 2023-03-24 at 10.31.58 PM.jpeg"
 img = load_img(pth)
 
 alpha = 0.1*25
