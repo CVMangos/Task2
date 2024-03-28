@@ -50,7 +50,7 @@ class Parameters:
         for _ in range(num_points_total):
             x = random.uniform(min_x, max_x)
             y = random.uniform(min_y, max_y)
-            if self.is_inside_shape(x, y, self.points):
+            if self.is_inside_shape(x, y):
                 num_points_inside += 1
         
         total_area = (max_x - min_x) * (max_y - min_y)
