@@ -6,7 +6,8 @@ import sys
 from imageViewPort import ImageViewport
 from functools import partial
 import numpy as np
-from ActiveContour import SnakeModel
+from snake import SnakeModel
+from parameters import Parameters
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -366,6 +367,53 @@ class MainWindow(QtWidgets.QMainWindow):
     def apply_ellipseHough(self):
         pass
 
+    def apply_activeContour(self):
+        """
+        Applies the active contour algorithm to the shape drawn by the user.
+
+        The algorithm is applied on the grayscale version of the image.
+        The resulting image with the contour is stored in the output port.
+        """
+        # Get the points defining the shape and the bounding box of the shape.
+        points = self.out_ports[1].get_freehand_points()
+        bounding_box = (
+            min(points, key=lambda p: p[0])[0],  # Minimum x-coordinate
+            max(points, key=lambda p: p[0])[0],  # Maximum x-coordinate
+            min(points, key=lambda p: p[1])[1],  # Minimum y-coordinate
+            max(points, key=lambda p: p[1])[1]   # Maximum y-coordinate
+        )
+
+        # Calculate the area and perimeter of the shape using the bounding box and the shape points.
+        param = Parameters(points)
+        area = param.calculate_area_free_shape(points, bounding_box)
+        primeter = param.calculate_perimeter(points)
+
+        # Get the chain code of the shape
+        chain_code = param.get_chain_code()
+        print(f"Chain code: {chain_code}") 
+
+        self.ui.areaLabel.setText(str(int(area)))
+        self.ui.perimeterLabel.setText(str(int(primeter)))
+
+        output_port = self.out_ports[1]
+
+        img = output_port.resized_img
+        if img is None or img.size == 0:
+            print("Error: Empty or None image received.")
+            return
+
+        # Create and apply active contour model to the image
+        snake_model = SnakeModel(img)
+        snake_model.iterate_snake(alpha=0.1*25, beta=100, gamma=2, n_iters=100)
+        result_image = snake_model.add_snake_to_image()
+
+        # Store the resulting image in the output port and display it
+        output_port.original_img = result_image
+        output_port.update_display()
+
+
+
+
     # def apply_activeContour(self):
     #     points = self.out_ports[1].get_freehand_points()
     #     # print(f"Points: {points}")
@@ -379,31 +427,11 @@ class MainWindow(QtWidgets.QMainWindow):
     #         print("Error: Empty or None image received.")
     #         return
         
-    #     snake_model = SnakeModel(img, xs, ys)
-    #     snake_model.iterate_snake(alpha=0.1*25, beta=100, gamma=2, n_iters=100)
-    #     result_image = snake_model.add_snake_to_image()
+    #     snake_model = SnakeModel(img, points)
+    #     curve = snake_model.active_contour(num_iterations = 500)
         
-    #     output_port.original_img = result_image
+    #     output_port.original_img = curve
     #     output_port.update_display()
-
-    def apply_activeContour(self):
-        points = self.out_ports[1].get_freehand_points()
-        # print(f"Points: {points}")
-        xs = [point[0] for point in points]
-        ys = [point[1] for point in points]
-        # print(f"Xs: {xs}", f"Ys: {ys}")
-
-        output_port = self.out_ports[1]
-        img = output_port.resized_img
-        if img is None or img.size == 0:
-            print("Error: Empty or None image received.")
-            return
-        
-        snake_model = SnakeModel(img, points)
-        curve = snake_model.active_contour(num_iterations = 500)
-        
-        output_port.original_img = curve
-        output_port.update_display()
 
 def main():
     app = QtWidgets.QApplication([])
