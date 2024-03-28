@@ -385,8 +385,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Calculate the area and perimeter of the shape using the bounding box and the shape points.
         param = Parameters(points)
-        area = param.calculate_area_free_shape(points, bounding_box)
-        primeter = param.calculate_perimeter(points)
+        area = param.calculate_area_free_shape(bounding_box)
+        primeter = param.calculate_perimeter()
 
         # Get the chain code of the shape
         chain_code = param.get_chain_code()
