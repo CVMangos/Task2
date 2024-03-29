@@ -1,101 +1,173 @@
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-
-class SnakeModel:
-    def __init__(self, image, Xs, Ys):
-        self.image = image
-        self.x_vals = Xs
-        self.y_vals = Ys
-
-    def create_A_matrix(self, alpha, beta, num_points):
-        """Create the A matrix for the Snake Iteration
-
-        Parameters
-        ----------
-        alpha : float
-            The stiffness parameter of the Snake Iteration
-        beta : float
-            The regularization parameter of the Snake Iteration
-        num_points : int
-            The number of points in the snake
-
-        Returns
-        -------
-        A : array
-            The A matrix to be used in the Snake Iteration
-        """
-        # Create the A matrix for the Snake Iteration
-        #
-        # The A matrix is a tridiagonal matrix with the following pattern:
-        # [[-2*alpha - 6*beta   0   0   ...   0]
-        #  [ alpha + 4*beta -beta   0   ...   0]
-        #  [   0        -beta   0   0   ...   0]
-        #  [   0           0   0   0   ...   0]
-        #  [   ...          ... ... ... ... ...]
-        #  [   0           0   0   0  -beta alpha + 4*beta]]
-        #
-        # where alpha is the stiffness parameter, beta is the regularization
-        # parameter and num_points is the number of points in the snake
-        row = np.r_[-2*alpha - 6*beta, alpha + 4*beta, -beta, np.zeros(num_points-5), -beta, alpha + 4*beta]
-        A = np.zeros((num_points, num_points))
-        for i in range(num_points):
-            A[i] = np.roll(row, i)
-        return A
-
-    def create_external_edge_force_gradients(self, sigma=20):
-        smoothed = cv2.GaussianBlur(self.image, (9, 9), sigma)
-        d_x, d_y = np.gradient(smoothed)
-        d_x = cv2.GaussianBlur(d_x, (9, 9), sigma)
-        d_y = cv2.GaussianBlur(d_y, (9, 9), sigma)
-        mag = (d_x**2 + d_y**2)**0.5
-        dd_x, dd_y = np.gradient(mag - mag.min() / (mag.max() - mag.min()))
-
-        def fx(x, y):
-            x = np.clip(x, 0, self.image.shape[1] - 1)
-            y = np.clip(y, 0, self.image.shape[0] - 1)
-            return dd_x[(y.round().astype(int), x.round().astype(int))]
-
-        def fy(x, y):
-            x = np.clip(x, 0, self.image.shape[1] - 1)
-            y = np.clip(y, 0, self.image.shape[0] - 1)
-            return dd_y[(y.round().astype(int), x.round().astype(int))]
-
-        return fx, fy
-
-    def iterate_snake(self, alpha, beta, gamma=0.1, n_iters=10):
-        fx, fy = self.create_external_edge_force_gradients()
-        x = np.array(self.x_vals)
-        y = np.array(self.y_vals)
-        A = self.create_A_matrix(alpha, beta, x.shape[0])
-        B = np.linalg.inv(np.eye(x.shape[0]) - gamma * A)
-
-        for _ in range(n_iters):
-            x_ = np.dot(B, x + gamma * fx(x, y))
-            y_ = np.dot(B, y + gamma * fy(x, y))
-            x, y = x_.copy(), y_.copy()
-        self.x_vals, self.y_vals = x, y
-        return x, y
-    
-    def add_snake_to_image(self):
-        image_with_snake = self.image.copy()
-        pts = np.array([(int(x), int(y)) for x, y in zip(self.x_vals, self.y_vals)], np.int32)
-        # pts = pts.reshape((-1, 1, 2))
-        cv2.polylines(image_with_snake, [pts], isClosed=True, color=(0, 255, 0), thickness=3)
-        return image_with_snake
+from math import sqrt, pow
 
 
-# # Example usage
-# image_path = "coin-png-500x501_5e76a44c_transparent_202166.png.png"
-# snake_model = SnakeModel(image_path)
-# alpha = 0.1 * 25
-# beta = 100
-# gamma = 2
-# iterations = 100
-# x, y = snake_model.x_vals, snake_model.y_vals
-# fx, fy = snake_model.create_external_edge_force_gradients()
-# xx, yy = snake_model.iterate_snake(x, y, alpha, beta, fx, fy, gamma, iterations, return_all=False)
+def convert_to_gray(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# plt.imshow(snake_model.image, cmap='gray')
-# plt.plot(xx, yy, color='red')
-# plt.show()
+
+def calculate_internal_energy(point, previous_point, next_point, alpha):
+    dx1 = point[0] - previous_point[0]
+    dy1 = point[1] - previous_point[1]
+    dx2 = next_point[0] - point[0]
+    dy2 = next_point[1] - point[1]
+    denominator = pow(dx1 * dx1 + dy1 * dy1, 1.5)
+    curvature = 0 if denominator == 0 else (dx1 * dy2 - dx2 * dy1) / denominator
+    return alpha * curvature
+
+
+def calculate_external_energy(image, point, beta):
+    return -beta * image[point[1], point[0]]
+
+
+def calculate_gradients(point, prev_point, gamma):
+    dx = point[0] - prev_point[0]
+    dy = point[1] - prev_point[1]
+    return gamma * (dx * dx + dy * dy)
+
+
+def calculate_point_energy(image, point, prev_point, next_point, alpha, beta, gamma):
+    internal_energy = calculate_internal_energy(point, prev_point, next_point, alpha)
+    external_energy = calculate_external_energy(image, point, beta)
+    gradients = calculate_gradients(point, prev_point, gamma)
+    return internal_energy + external_energy + gradients
+
+
+def snake_operation(image, curve, window_size, alpha, beta, gamma):
+    new_curve = []
+    window_index = (window_size - 1) // 2
+    num_points = len(curve)
+
+    for i in range(num_points):
+        pt = curve[i]
+        prev_pt = curve[(i - 1 + num_points) % num_points]
+        next_pt = curve[(i + 1) % num_points]
+        min_energy = float("inf")
+        new_pt = pt
+
+        for dx in range(-window_index, window_index + 1):
+            for dy in range(-window_index, window_index + 1):
+                move_pt = (pt[0] + dx, pt[1] + dy)
+                energy = calculate_point_energy(
+                    image, move_pt, prev_pt, next_pt, alpha, beta, gamma
+                )
+                if energy < min_energy:
+                    min_energy = energy
+                    new_pt = move_pt
+        new_curve.append(new_pt)
+
+    return new_curve
+
+
+def initialize_contours(center, radius, number_of_points):
+    print("initializing contours")
+    curve = []
+    current_angle = 0
+    resolution = 360 / number_of_points
+
+    for _ in range(number_of_points):
+        x_p = int(center[0] + radius * np.cos(np.radians(current_angle)))
+        y_p = int(center[1] + radius * np.sin(np.radians(current_angle)))
+        current_angle += resolution
+        curve.append((x_p, y_p))
+
+    return curve
+
+
+def draw_contours(image, snake_points):
+    print("drawing contours")
+    output_image = image.copy()
+    for i in range(len(snake_points)):
+        cv2.circle(output_image, snake_points[i], 4, (0, 0, 255), -1)
+        if i > 0:
+            cv2.line(output_image, snake_points[i - 1], snake_points[i], (255, 0, 0), 2)
+    cv2.line(output_image, snake_points[0], snake_points[-1], (255, 0, 0), 2)
+    return output_image
+
+
+def active_contour(
+    input_image,
+    center,
+    radius,
+    num_iterations,
+    num_points,
+    window_size,
+    alpha,
+    beta,
+    gamma,
+):
+    print("starting active contour")
+    curve = initialize_contours(center, radius, num_points)
+    gray_image = convert_to_gray(input_image)
+
+    for _ in range(num_iterations):
+        curve = snake_operation(gray_image, curve, window_size, alpha, beta, gamma)
+
+    output_image = draw_contours(input_image, curve)
+    return curve, output_image
+
+
+def active_contour_from_circle(
+    input_image,
+    circle_center,
+    circle_radius,
+    num_iterations,
+    num_points,
+    window_size,
+    alpha,
+    beta,
+    gamma,
+):
+    print("starting active contour")
+    snake_curve, output_image = active_contour(
+        input_image,
+        circle_center,
+        circle_radius,
+        num_iterations,
+        num_points,
+        window_size,
+        alpha,
+        beta,
+        gamma,
+    )
+    return snake_curve, output_image
+
+
+# Example usage
+input_image = cv2.imread("WhatsApp Image 2023-03-24 at 10.31.57 PM (1).jpeg")
+output_image = input_image.copy()
+
+# Draw circle on the original image
+circle_center = input_image.shape[0]//2 , input_image.shape[1]//2
+circle_radius = 200  # Example radius
+cv2.circle(output_image, circle_center, circle_radius, (0, 255, 0), 2)
+
+cv2.imshow("Original Image with Circle", output_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+num_iterations = 300
+num_points = 300
+window_size = 4
+alpha = 10
+beta = 3
+gamma = 1
+
+print("before")
+snake_curve, output_image = active_contour_from_circle(
+    input_image,
+    circle_center,
+    circle_radius,
+    num_iterations,
+    num_points,
+    window_size,
+    alpha,
+    beta,
+    gamma,
+)
+
+cv2.imshow("Output Image", output_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
