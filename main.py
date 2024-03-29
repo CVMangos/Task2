@@ -8,6 +8,7 @@ from functools import partial
 import numpy as np
 import snake.snake2 as snake_utils
 import matplotlib.pyplot as plt
+from Hough import Hough
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -207,29 +208,29 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
 
-        self.ui.smoothingSlider.setMinimum(1)  # Set minimum value for Threshold
-        self.ui.smoothingSlider.setMaximum(100)  # Set maximum value for Threshold
+        self.ui.smoothingSlider.setMinimum(0)  # Set minimum value for Threshold
+        self.ui.smoothingSlider.setMaximum(50)  # Set maximum value for Threshold
         self.ui.smoothingSlider.setValue(1)  # Set initial value for Threshold
 
         self.ui.t_low.setMinimum(1) 
         self.ui.t_low.setMaximum(100) 
-        self.ui.t_low.setValue(1)
+        self.ui.t_low.setValue(20)
 
         self.ui.t_high.setMinimum(1)  
         self.ui.t_high.setMaximum(100) 
-        self.ui.t_high.setValue(1) 
+        self.ui.t_high.setValue(50) 
 
         # For HoughLinesP
         if current_index == 0:
             # "Rho"
             self.ui.Slider1.setMinimum(1)  # Set minimum value for Rho
-            self.ui.Slider1.setMaximum(10)  # Set maximum value for Rho
-            self.ui.Slider1.setValue(1)  # Set initial value for Rho
+            self.ui.Slider1.setMaximum(20)  # Set maximum value for Rho
+            self.ui.Slider1.setValue(9)  # Set initial value for Rho
 
             # "Theta"
             self.ui.Slider2.setMinimum(1)  # Set minimum value for Theta
-            self.ui.Slider2.setMaximum(180)  # Set maximum value for Theta
-            self.ui.Slider2.setValue(1)  # Set initial value for Theta
+            self.ui.Slider2.setMaximum(10000)  # Set maximum value for Theta
+            self.ui.Slider2.setValue(264)  # Set initial value for Theta
 
         # For HoughCircles and HoughEllipses
         if current_index == 1 or current_index == 2:
@@ -258,7 +259,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
         # For Threshold
-        smoothing_value = self.ui.smoothingSlider.value()
+        smoothing_value = self.ui.smoothingSlider.value() / 10
         self.ui.smoothing_val.setText(f"{smoothing_value}")
 
         t_low = self.ui.t_low.value()
@@ -270,7 +271,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if current_index == 0:
             # For HoughLinesP
             rho_value = self.ui.Slider1.value()
-            theta_value = self.ui.Slider2.value()
+            theta_value = self.ui.Slider2.value() / 1000
             self.ui.slider1_val.setText(f"{rho_value}")
             self.ui.slider2_val.setText(f"{theta_value}")
 
@@ -393,7 +394,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def apply_lineHough(self):
-        pass
+        output_port = self.out_ports[0]
+        self.reset_image(0)
+        hough = Hough(output_port.resized_img)
+        processed_image = hough.detect_lines(low_threshold= self.ui.t_low.value(), 
+                                            high_threshold= self.ui.t_high.value(),
+                                            smoothing_degree= self.ui.smoothingSlider.value() / 10,
+                                            rho= self.ui.Slider1.value(),
+                                            theta=self.ui.Slider2.value() / 1000
+                                            )
+        output_port.original_img = processed_image
+        output_port.update_display()
+        
 
 
     def apply_circleHough(self):
