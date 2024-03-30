@@ -237,13 +237,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.ui.Slider1.setMinimum(1)  # Set minimum value for min_radius
             self.ui.Slider1.setMaximum(100)  # Set maximum value for min_radius
-            self.ui.Slider1.setValue(1)  # Set initial value for min_radius
+            self.ui.Slider1.setValue(60)  # Set initial value for min_radius
 
             self.ui.Slider2.setMinimum(1)  # Set minimum value for max_radius
             self.ui.Slider2.setMaximum(100)  # Set maximum value for max_radius
-            self.ui.Slider2.setValue(1)  # Set initial value for max_radius
+            self.ui.Slider2.setValue(65)  # Set initial value for max_radius
 
-            self.ui.Slider3.setMinimum(1)  # Set minimum value for min_dist
+            self.ui.Slider3.setMinimum(10)  # Set minimum value for min_dist
             self.ui.Slider3.setMaximum(100)  # Set maximum value for min_dist
             self.ui.Slider3.setValue(1)  # Set initial value for min_dist
 
@@ -409,7 +409,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def apply_circleHough(self):
-        pass
+        output_port = self.out_ports[0]
+        self.reset_image(0)
+        hough = Hough(output_port.resized_img)
+        processed_image = hough.detect_circles(low_threshold= self.ui.t_low.value(), 
+                                            high_threshold= self.ui.t_high.value(),
+                                            smoothing_degree= self.ui.smoothingSlider.value() / 10,
+                                            min_radius= self.ui.Slider1.value(),
+                                            max_radius= self.ui.Slider2.value(),
+                                            min_dist= self.ui.Slider3.value(),
+                                            )
+        output_port.original_img = processed_image
+        output_port.update_display()
 
 
     def apply_ellipseHough(self):

@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import cv2
+from collections import defaultdict
 
 class Hough:
     def __init__(self, original_img):
@@ -42,12 +43,37 @@ class Hough:
             y1 = int(y0 + 1000*(a))
             x2 = int(x0 - 1000*(-b))
             y2 = int(y0 - 1000*(a))
-            cv2.line(image_colored, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            cv2.line(image_colored, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
         return image_colored    
        
 
+    def detect_circles(self, low_threshold: float, high_threshold: float, smoothing_degree: float, min_radius: float, max_radius: float, min_dist: float):
+        image = cv2.cvtColor(self.image.copy(), cv2.COLOR_GRAY2BGR)
+        edges = self.canny_detector(low_threshold, high_threshold, smoothing_degree)
+        num_thetas = 10
+        threshold = 6
+        points = []
+        for r in range(min_radius, max_radius + 1):
+            for t in range(num_thetas):
+                points.append((r, int(r * np.cos(2 * np.pi * t / num_thetas)), int(r * np.sin(2 * np.pi * t / num_thetas))))
 
+        acc = defaultdict(int)
+        edge_points = np.where(edges == 255)
+        for x, y in zip(edge_points[1][::2], edge_points[0][::2]):
+            for r, dx, dy in points:
+                a = x - dx
+                b = y - dy
+                acc[(a, b, r)] += 1
+
+        circles = []
+        for k, v in sorted(acc.items(), key=lambda i: -i[1]):
+            x, y, r = k
+            if v  >= threshold and all(np.sqrt((x - xc) ** 2 + (y - yc) ** 2) >= min_dist for xc, yc, _ in circles):
+                circles.append((x, y, r))
+                cv2.circle(image, (x, y), r, (0, 255, 0), 2)
+            
+        return image
 
     def canny_detector(self, low_threshold: float, high_threshold: float, smoothing_degree: float):
         # Step 2: Apply Gaussian blur
