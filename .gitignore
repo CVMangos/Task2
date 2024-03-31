@@ -1,0 +1,41 @@
+# ignore cahers
+__pycache__
+
+# ignore image
+snake.png
+
+# Ignore VS Code specific files
+.vscode/
+*.code-workspace
+
+# Ignore project-specific settings directory
+/.vscode/
+
+# Ignore Visual Studio Code settings files
+*.code-workspace
+
+# Ignore user-specific VS Code settings directory
+.vscode/
+
+# Ignore Python virtual environment folder
+venv/
+
+# Ignore node_modules folder for Node.js projects
+node_modules/
+
+# Ignore any compiled binaries or build output
+*.dll
+*.exe
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.npmrc
+
+# Ignore any log files or databases
+*.log
+*.sqlite
+*.sqlite3
+*.db
