@@ -446,10 +446,10 @@ class MainWindow(QtWidgets.QMainWindow):
         iterations = int(self.ui.iterations.text())
         num_points = int(self.ui.points_number.text())
         window_size = int(self.ui.window_size.text())
-        circle_radius = int(self.ui.circle_radius.text())
+        circle_radius = int(self.ui.lineEdit.text())
 
         img = self.input_ports[1].resized_img
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         circle_center = img.shape[0] // 2, img.shape[1] // 2
         snake_curve, output_img = snake_utils.active_contour_from_circle(img, circle_center, circle_radius=circle_radius,
                                                                          alpha=alpha, beta=beta,
