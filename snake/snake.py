@@ -99,7 +99,8 @@ def active_contour(
 ):
     print("starting active contour")
     curve = initialize_contours(center, radius, num_points)
-    gray_image = convert_to_gray(input_image)
+    # gray_image = convert_to_gray(input_image)
+    gray_image = input_image
 
     for _ in range(num_iterations):
         curve = snake_operation(gray_image, curve, window_size, alpha, beta, gamma)
@@ -135,39 +136,39 @@ def active_contour_from_circle(
 
 
 # Example usage
-input_image = cv2.imread("WhatsApp Image 2023-03-24 at 10.31.57 PM (1).jpeg")
-output_image = input_image.copy()
-
-# Draw circle on the original image
-circle_center = input_image.shape[0]//2 , input_image.shape[1]//2
-circle_radius = 200  # Example radius
-cv2.circle(output_image, circle_center, circle_radius, (0, 255, 0), 2)
-
-cv2.imshow("Original Image with Circle", output_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-num_iterations = 300
-num_points = 300
-window_size = 4
-alpha = 10
-beta = 3
-gamma = 1
-
-print("before")
-snake_curve, output_image = active_contour_from_circle(
-    input_image,
-    circle_center,
-    circle_radius,
-    num_iterations,
-    num_points,
-    window_size,
-    alpha,
-    beta,
-    gamma,
-)
-
-cv2.imshow("Output Image", output_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# input_image = cv2.imread("coin-png-500x501_5e76a44c_transparent_202166.png.png")
+# output_image = input_image.copy()
+#
+# # Draw circle on the original image
+# circle_center = input_image.shape[0]//2 , input_image.shape[1]//2
+# circle_radius = 200  # Example radius
+# cv2.circle(output_image, circle_center, circle_radius, (0, 255, 0), 2)
+#
+# cv2.imshow("Original Image with Circle", output_image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+#
+# num_iterations = 300
+# num_points = 300
+# window_size = 4
+# alpha = 10
+# beta = 3
+# gamma = 1
+#
+# print("before")
+# snake_curve, output_image = active_contour_from_circle(
+#     input_image,
+#     circle_center,
+#     circle_radius,
+#     num_iterations,
+#     num_points,
+#     window_size,
+#     alpha,
+#     beta,
+#     gamma,
+# )
+#
+# cv2.imshow("Output Image", output_image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
