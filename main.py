@@ -6,8 +6,8 @@ from src.imageViewPort import ImageViewport
 from src.snake import SnakeContour
 from src.parameters import Parameters
 from src.Validator import Validator
+from src.Hough import Hough
 import cv2
-
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -25,7 +25,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Image Processing ToolBox")
         self.setWindowIcon(QIcon("icons/image-layer-svgrepo-com.png"))
         self.ui.hough_comboBox.currentIndexChanged.connect(self.handle_hough_combobox)
-        self.ui.threshSlider.valueChanged.connect(self.update_label_text)
+        self.ui.smoothingSlider.valueChanged.connect(self.update_label_text)
+        self.ui.t_low.valueChanged.connect(self.update_label_text)
+        self.ui.t_high.valueChanged.connect(self.update_label_text)
         self.ui.Slider1.valueChanged.connect(self.update_label_text)
         self.ui.Slider2.valueChanged.connect(self.update_label_text)
         self.ui.Slider3.valueChanged.connect(self.update_label_text)
@@ -135,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.out_ports[index].clear()
 
 
-    def reset_image(self, event, index: int):
+    def reset_image(self, index: int):
         """
         Resets the image at the specified index in the input_ports list.
 
@@ -191,19 +193,28 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.label1.setText("Rho")  # Label for rho
             self.ui.label2.setText("Theta")  # Label for theta
             self.ui.label3.hide()  # Hide the label for min_dist
+            self.ui.label4.hide() 
+            self.ui.label5.hide()  
 
         elif current_index == 1:
             # For HoughCircles
             self.ui.label1.setText("Min Radius")  # Label for min_radius
             self.ui.label2.setText("Max Radius")  # Label for max_radius
-            self.ui.label3.setText("Min Distance")  # Label for min_dist
+            self.ui.label3.setText("Min Dist")  # Label for min_dist
             self.ui.label3.show()  # Show the label for min_dist
+            self.ui.label4.hide() 
+            self.ui.label5.hide() 
 
         else:
             # For HoughEllipse
-            self.ui.label1.setText("Min Axis")  # Label for min_axis
-            self.ui.label2.setText("Max Axis")  # Label for max_axis
-            self.ui.label3.hide()  # Hide the label for min_dist
+            self.ui.label1.setText("Label")  
+            self.ui.label2.setText("Label")  
+            self.ui.label3.setText("Label")  
+            self.ui.label4.setText("Label")  
+            self.ui.label5.setText("Label")  
+            self.ui.label3.show()  
+            self.ui.label4.show() 
+            self.ui.label5.show() 
 
 
     def handle_hough_sliders(self):
@@ -216,12 +227,27 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         combo_idex = self.ui.hough_comboBox.currentIndex()
         print(combo_idex)
-        if combo_idex == 0 or combo_idex == 2:  # HoughLinesP or HoughEllipse
+        if combo_idex == 0:  # HoughLinesP or HoughEllipse
             self.ui.Slider3.hide()  # Hide the third slider
             self.ui.slider3_val.hide()  # Hide the label for min_dist
+            self.ui.Slider4.hide() 
+            self.ui.slider4_val.hide()  
+            self.ui.Slider5.hide() 
+            self.ui.slider5_val.hide() 
+        elif combo_idex == 1: 
+            self.ui.Slider3.show()  # Hide the third slider
+            self.ui.slider3_val.show()  # Hide the label for min_dist
+            self.ui.Slider4.hide() 
+            self.ui.slider4_val.hide()  
+            self.ui.Slider5.hide() 
+            self.ui.slider5_val.hide()  
         else:  # HoughCircles
             self.ui.Slider3.show()  # Show the third slider
             self.ui.slider3_val.show()  # Show the label for min_dist
+            self.ui.Slider4.show() 
+            self.ui.slider4_val.show()  
+            self.ui.Slider5.show() 
+            self.ui.slider5_val.show() 
 
         self.sliders_limits()  # Set the limits for the sliders
 
@@ -240,34 +266,42 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
 
-        self.ui.threshSlider.setMinimum(1)  # Set minimum value for Threshold
-        self.ui.threshSlider.setMaximum(100)  # Set maximum value for Threshold
-        self.ui.threshSlider.setValue(1)  # Set initial value for Threshold
+        self.ui.smoothingSlider.setMinimum(0)  # Set minimum value for Threshold
+        self.ui.smoothingSlider.setMaximum(50)  # Set maximum value for Threshold
+        self.ui.smoothingSlider.setValue(1)  # Set initial value for Threshold
+
+        self.ui.t_low.setMinimum(1) 
+        self.ui.t_low.setMaximum(100) 
+        self.ui.t_low.setValue(20)
+
+        self.ui.t_high.setMinimum(1)  
+        self.ui.t_high.setMaximum(100) 
+        self.ui.t_high.setValue(50) 
 
         # For HoughLinesP
         if current_index == 0:
             # "Rho"
             self.ui.Slider1.setMinimum(1)  # Set minimum value for Rho
-            self.ui.Slider1.setMaximum(10)  # Set maximum value for Rho
-            self.ui.Slider1.setValue(1)  # Set initial value for Rho
+            self.ui.Slider1.setMaximum(20)  # Set maximum value for Rho
+            self.ui.Slider1.setValue(9)  # Set initial value for Rho
 
             # "Theta"
             self.ui.Slider2.setMinimum(1)  # Set minimum value for Theta
-            self.ui.Slider2.setMaximum(180)  # Set maximum value for Theta
-            self.ui.Slider2.setValue(1)  # Set initial value for Theta
+            self.ui.Slider2.setMaximum(10000)  # Set maximum value for Theta
+            self.ui.Slider2.setValue(264)  # Set initial value for Theta
 
         # For HoughCircles and HoughEllipses
         if current_index == 1 or current_index == 2:
 
             self.ui.Slider1.setMinimum(1)  # Set minimum value for min_radius
             self.ui.Slider1.setMaximum(100)  # Set maximum value for min_radius
-            self.ui.Slider1.setValue(1)  # Set initial value for min_radius
+            self.ui.Slider1.setValue(60)  # Set initial value for min_radius
 
             self.ui.Slider2.setMinimum(1)  # Set minimum value for max_radius
             self.ui.Slider2.setMaximum(100)  # Set maximum value for max_radius
-            self.ui.Slider2.setValue(1)  # Set initial value for max_radius
+            self.ui.Slider2.setValue(65)  # Set initial value for max_radius
 
-            self.ui.Slider3.setMinimum(1)  # Set minimum value for min_dist
+            self.ui.Slider3.setMinimum(10)  # Set minimum value for min_dist
             self.ui.Slider3.setMaximum(100)  # Set maximum value for min_dist
             self.ui.Slider3.setValue(1)  # Set initial value for min_dist
 
@@ -283,13 +317,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
         # For Threshold
-        threshold_value = self.ui.threshSlider.value()
-        self.ui.slider0_val.setText(f"{threshold_value}")
+        smoothing_value = self.ui.smoothingSlider.value() / 10
+        self.ui.smoothing_val.setText(f"{smoothing_value}")
+
+        t_low = self.ui.t_low.value()
+        self.ui.t_low_val.setText(f"{t_low}")
+
+        t_high = self.ui.t_high.value()
+        self.ui.t_high_val.setText(f"{t_high}")
 
         if current_index == 0:
             # For HoughLinesP
             rho_value = self.ui.Slider1.value()
-            theta_value = self.ui.Slider2.value()
+            theta_value = self.ui.Slider2.value() / 1000
             self.ui.slider1_val.setText(f"{rho_value}")
             self.ui.slider2_val.setText(f"{theta_value}")
 
@@ -346,15 +386,68 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def apply_lineHough(self):
-        pass
+        """
+        Applies the Hough line transform to the input image.
+
+        The parameters of the Hough transform are taken from the GUI's sliders.
+        The output is displayed in the first output port.
+        """
+        output_port = self.out_ports[0]  # The first output port
+        self.reset_image(0)  # Reset the image in the first output port
+
+        hough = Hough(output_port.resized_img)  # Create a Hough object
+
+        processed_image = hough.detect_lines(
+            low_threshold=self.ui.t_low.value(),  # Low threshold from GUI slider
+            high_threshold=self.ui.t_high.value(),  # High threshold from GUI slider
+            smoothing_degree=self.ui.smoothingSlider.value() / 10,  # Smoothing degree from GUI slider
+            rho=self.ui.Slider1.value(),  # Rho from GUI slider
+            theta=self.ui.Slider2.value() / 1000  # Theta from GUI slider
+        )
+
+        output_port.original_img = processed_image  # Set the processed image as the original image
+        output_port.update_display()  # Update the display of the output port
 
 
     def apply_circleHough(self):
-        pass
+        """
+        Applies the Hough circle transform to the input image.
+
+        The parameters of the Hough transform are taken from the GUI's sliders.
+        The output is displayed in the first output port.
+        """
+        output_port = self.out_ports[0]  # The first output port
+        self.reset_image(0)  # Reset the image in the first output port
+
+        hough = Hough(output_port.resized_img)  # Create a Hough object
+
+        processed_image = hough.detect_circles(
+            low_threshold=self.ui.t_low.value(),  # Low threshold from GUI slider
+            high_threshold=self.ui.t_high.value(),  # High threshold from GUI slider
+            smoothing_degree=self.ui.smoothingSlider.value() / 10,  # Smoothing degree from GUI slider
+            min_radius=self.ui.Slider1.value(),  # Minimum radius from GUI slider
+            max_radius=self.ui.Slider2.value(),  # Maximum radius from GUI slider
+            min_dist=self.ui.Slider3.value(),  # Minimum distance between detected circles from GUI slider
+        )
+
+        output_port.original_img = processed_image  # Set the processed image as the original image
+        output_port.update_display()  # Update the display of the output port
 
 
     def apply_ellipseHough(self):
-        pass
+        """
+        Applies the Hough transform to detect ellipses in the input image.
+
+        The output is displayed in the first output port.
+        """
+        input_port = self.input_ports[0]  # The first input port
+        output_port = self.out_ports[0]  # The first output port
+        img = input_port.resized_img.copy()  # Get a copy of the input image
+        hough = Hough(img)  # Create a Hough object
+        detected_ellipses = hough.hough_ellipse()  # Detect ellipses using the Hough transform
+        output_port.original_img = detected_ellipses  # Set the detected ellipses as the output image
+        output_port.update_display()  # Update the display of the output port
+
 
     def get_snake_params(self):
         """
