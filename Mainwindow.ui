@@ -83,7 +83,7 @@ QTabBar::tab:!selected {
 </string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="houghTab">
        <attribute name="title">
@@ -122,6 +122,7 @@ QTabBar::tab:!selected {
                <font>
                 <family>Impact</family>
                 <pointsize>24</pointsize>
+                <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
@@ -237,6 +238,7 @@ QComboBox::down-arrow {
                <font>
                 <family>Impact</family>
                 <pointsize>24</pointsize>
+                <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
@@ -311,9 +313,9 @@ QComboBox::down-arrow {
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>0</y>
-                    <width>249</width>
-                    <height>683</height>
+                    <y>-174</y>
+                    <width>241</width>
+                    <height>800</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -331,6 +333,7 @@ QComboBox::down-arrow {
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -469,6 +472,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -607,6 +611,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -732,6 +737,145 @@ color: #fff;
                     </layout>
                    </item>
                    <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <item alignment="Qt::AlignLeft">
+                      <widget class="QLabel" name="filterLable_6">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <family>A Nasr</family>
+                         <pointsize>14</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">QLabel{
+	color: rgb(247, 247, 247);
+	border:none;
+}</string>
+                       </property>
+                       <property name="text">
+                        <string>Threshold</string>
+                       </property>
+                       <property name="textFormat">
+                        <enum>Qt::AutoText</enum>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_28">
+                       <item>
+                        <widget class="QSlider" name="thresholdSlider">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>100</width>
+                           <height>35</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QSlider:horizontal {
+    min-height: 35%;
+}
+QSlider::groove:horizontal {
+    height: 1px;
+    background: white; 
+}
+QSlider::handle:horizontal {
+    width: 20px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+    border-radius: 10px;
+    background: qradialgradient(spread:reflect, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0.6 rgba(210, 210, 210, 255), stop:0.7 rgba(210, 210, 210, 100));
+}
+QSlider::handle:horizontal:hover {
+    background: qradialgradient(spread:reflect, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0.6 rgba(255, 255, 255, 255), stop:0.7 rgba(255, 255, 255, 100));
+}</string>
+                         </property>
+                         <property name="minimum">
+                          <number>50</number>
+                         </property>
+                         <property name="maximum">
+                          <number>250</number>
+                         </property>
+                         <property name="value">
+                          <number>150</number>
+                         </property>
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="threshold_val">
+                         <property name="maximumSize">
+                          <size>
+                           <width>70</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <family>Impact</family>
+                           <pointsize>12</pointsize>
+                          </font>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QLabel {
+background-color: rgb(40, 57, 153);
+border: 0;
+border-radius: 8px;
+color: #fff;
+}</string>
+                         </property>
+                         <property name="frameShape">
+                          <enum>QFrame::NoFrame</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Plain</enum>
+                         </property>
+                         <property name="lineWidth">
+                          <number>5</number>
+                         </property>
+                         <property name="midLineWidth">
+                          <number>5</number>
+                         </property>
+                         <property name="text">
+                          <string>0</string>
+                         </property>
+                         <property name="textFormat">
+                          <enum>Qt::AutoText</enum>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
                     <layout class="QVBoxLayout" name="verticalLayout_10">
                      <item alignment="Qt::AlignLeft">
                       <widget class="QLabel" name="label1">
@@ -745,6 +889,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -883,6 +1028,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -1021,6 +1167,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -1159,6 +1306,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -1297,6 +1445,7 @@ color: #fff;
                         <font>
                          <family>A Nasr</family>
                          <pointsize>14</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -1448,6 +1597,7 @@ color: #fff;
                       <font>
                        <family>Impact</family>
                        <pointsize>20</pointsize>
+                       <weight>50</weight>
                        <bold>false</bold>
                       </font>
                      </property>
@@ -1743,6 +1893,7 @@ QPushButton:pressed {
                  <font>
                   <family>Impact</family>
                   <pointsize>24</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -1778,6 +1929,7 @@ QPushButton:pressed {
                  <font>
                   <family>Impact</family>
                   <pointsize>24</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -1854,6 +2006,7 @@ QPushButton:pressed {
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -1884,6 +2037,7 @@ QPushButton:pressed {
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -1914,6 +2068,7 @@ QPushButton:pressed {
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -1954,6 +2109,7 @@ QPushButton:pressed {
                <font>
                 <family>Impact</family>
                 <pointsize>20</pointsize>
+                <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
@@ -2002,6 +2158,7 @@ background-color: #1c2973;
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -2048,6 +2205,7 @@ background-color: #1c2973;
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -2094,6 +2252,7 @@ background-color: #1c2973;
                  <font>
                   <family>Impact</family>
                   <pointsize>18</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -2183,6 +2342,7 @@ border-raduis: 10px;
                  <font>
                   <family>Impact</family>
                   <pointsize>24</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -2220,6 +2380,7 @@ border-raduis: 10px;
                    <font>
                     <family>Impact</family>
                     <pointsize>14</pointsize>
+                    <weight>50</weight>
                     <bold>false</bold>
                    </font>
                   </property>
@@ -2284,6 +2445,7 @@ background-color: #1c2973;
                      <font>
                       <family>Impact</family>
                       <pointsize>18</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -2312,6 +2474,7 @@ background-color: #1c2973;
                        <font>
                         <family>Impact</family>
                         <pointsize>18</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -2397,6 +2560,7 @@ border-raduis: 10px;
                      <font>
                       <family>Impact</family>
                       <pointsize>18</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -2489,6 +2653,7 @@ color: #fff;
                      <font>
                       <family>Impact</family>
                       <pointsize>18</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                      </font>
                     </property>
@@ -2568,6 +2733,7 @@ color: #fff;
                  <font>
                   <family>Impact</family>
                   <pointsize>24</pointsize>
+                  <weight>50</weight>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -2623,7 +2789,7 @@ color: #fff;
      <x>0</x>
      <y>0</y>
      <width>1387</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

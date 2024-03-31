@@ -28,6 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.smoothingSlider.valueChanged.connect(self.update_label_text)
         self.ui.t_low.valueChanged.connect(self.update_label_text)
         self.ui.t_high.valueChanged.connect(self.update_label_text)
+        self.ui.thresholdSlider.valueChanged.connect(self.update_label_text)
         self.ui.Slider1.valueChanged.connect(self.update_label_text)
         self.ui.Slider2.valueChanged.connect(self.update_label_text)
         self.ui.Slider3.valueChanged.connect(self.update_label_text)
@@ -228,6 +229,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.filterLable_3.show()  
         self.ui.filterLable_4.show()  
         self.ui.filterLable_5.show()  
+        self.ui.filterLable_6.show()  
         self.ui.Slider1.show()  
         self.ui.slider1_val.show() 
         self.ui.Slider2.show()  
@@ -237,7 +239,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.t_low.show() 
         self.ui.t_low_val.show() 
         self.ui.t_high.show()  
-        self.ui.t_high_val.show()  
+        self.ui.t_high_val.show()
+        self.ui.thresholdSlider.show()  
+        self.ui.threshold_val.show()    
         if combo_idex == 0:  # HoughLinesP or HoughEllipse
             self.ui.Slider3.hide()  # Hide the third slider
             self.ui.slider3_val.hide()  # Hide the label for min_dist
@@ -256,6 +260,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.filterLable_3.hide()  
             self.ui.filterLable_4.hide()  
             self.ui.filterLable_5.hide()  
+            self.ui.filterLable_6.hide()  
             self.ui.Slider1.hide()  
             self.ui.slider1_val.hide() 
             self.ui.Slider2.hide()  
@@ -268,6 +273,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.slider5_val.hide() 
             self.ui.smoothingSlider.hide()  
             self.ui.smoothing_val.hide()  
+            self.ui.thresholdSlider.hide()  
+            self.ui.threshold_val.hide()  
             self.ui.t_low.hide() 
             self.ui.t_low_val.hide() 
             self.ui.t_high.hide()  
@@ -291,7 +298,7 @@ class MainWindow(QtWidgets.QMainWindow):
         current_index = self.ui.hough_comboBox.currentIndex()
 
         self.ui.smoothingSlider.setMinimum(0)  # Set minimum value for Smoothing
-        self.ui.smoothingSlider.setMaximum(1)  # Set maximum value for Smoothing
+        self.ui.smoothingSlider.setMaximum(30)  # Set maximum value for Smoothing
         self.ui.smoothingSlider.setValue(1)  # Set initial value for Smoothing
 
         self.ui.t_low.setMinimum(1) 
@@ -314,7 +321,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.Slider2.setMaximum(10000)  # Set maximum value for Theta
             self.ui.Slider2.setValue(264)  # Set initial value for Theta
 
-        # For HoughCircles and HoughEllipses
+            # "Threshold"
+            self.ui.thresholdSlider.setMinimum(1)  
+            self.ui.thresholdSlider.setMaximum(1000) 
+            self.ui.thresholdSlider.setValue(700) 
+
+        # For HoughCircles
         if current_index == 1:
 
             self.ui.Slider1.setMinimum(1)  # Set minimum value for min_radius
@@ -325,9 +337,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.Slider2.setMaximum(250)  # Set maximum value for max_radius
             self.ui.Slider2.setValue(65)  # Set initial value for max_radius
 
-            self.ui.Slider3.setMinimum(10)  # Set minimum value for min_dist
+            self.ui.Slider3.setMinimum(0)  # Set minimum value for min_dist
             self.ui.Slider3.setMaximum(100)  # Set maximum value for min_dist
-            self.ui.Slider3.setValue(1)  # Set initial value for min_dist
+            self.ui.Slider3.setValue(10)  # Set initial value for min_dist
+
+            # "Threshold"
+            self.ui.thresholdSlider.setMinimum(1)  
+            self.ui.thresholdSlider.setMaximum(30) 
+            self.ui.thresholdSlider.setValue(7) 
 
 
     def update_label_text(self):
@@ -349,6 +366,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         t_high = self.ui.t_high.value()
         self.ui.t_high_val.setText(f"{t_high}")
+
+        threshold = self.ui.thresholdSlider.value()
+        self.ui.threshold_val.setText(f"{threshold}")
 
         if current_index == 0:
             # For HoughLinesP
@@ -419,6 +439,7 @@ class MainWindow(QtWidgets.QMainWindow):
             low_threshold=self.ui.t_low.value(),  # Low threshold from GUI slider
             high_threshold=self.ui.t_high.value(),  # High threshold from GUI slider
             smoothing_degree=self.ui.smoothingSlider.value() / 10,  # Smoothing degree from GUI slider
+            threshold=self.ui.thresholdSlider.value(),  # Threshold from GUI slider
             rho=self.ui.Slider1.value(),  # Rho from GUI slider
             theta=self.ui.Slider2.value() / 1000  # Theta from GUI slider
         )
@@ -443,6 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
             low_threshold=self.ui.t_low.value(),  # Low threshold from GUI slider
             high_threshold=self.ui.t_high.value(),  # High threshold from GUI slider
             smoothing_degree=self.ui.smoothingSlider.value() / 10,  # Smoothing degree from GUI slider
+            threshold=self.ui.thresholdSlider.value(),  # Threshold from GUI slider
             min_radius=self.ui.Slider1.value(),  # Minimum radius from GUI slider
             max_radius=self.ui.Slider2.value(),  # Maximum radius from GUI slider
             min_dist=self.ui.Slider3.value(),  # Minimum distance between detected circles from GUI slider

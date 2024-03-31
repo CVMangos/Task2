@@ -9,10 +9,9 @@ class Hough:
         self.image = original_img
         self.gradient_directions = None
 
-    def detect_lines(self, low_threshold: float, high_threshold: float, smoothing_degree: float, rho: int, theta: float):
+    def detect_lines(self, low_threshold: float, high_threshold: float, smoothing_degree: float, threshold: int, rho: int, theta: float):
         image = self.image.copy()
         edges = self.canny_detector(low_threshold, high_threshold, smoothing_degree)
-        threshold = 700
         diagonal = np.sqrt(image.shape[0]**2 + image.shape[1]**2)
         theta_angles = np.arange(-np.pi/2, np.pi/2, theta)
         rho_values = np.arange(-diagonal, diagonal, rho)
@@ -50,11 +49,10 @@ class Hough:
         return image_colored    
        
 
-    def detect_circles(self, low_threshold: float, high_threshold: float, smoothing_degree: float, min_radius: float, max_radius: float, min_dist: float):
+    def detect_circles(self, low_threshold: float, high_threshold: float, smoothing_degree: float, threshold: int, min_radius: float, max_radius: float, min_dist: float):
         image = cv2.cvtColor(self.image.copy(), cv2.COLOR_GRAY2BGR)
         edges = self.canny_detector(low_threshold, high_threshold, smoothing_degree)
-        num_thetas = 10
-        threshold = 6
+        num_thetas = 20
         points = []
         for r in range(min_radius, max_radius + 1):
             for t in range(num_thetas):
