@@ -81,7 +81,7 @@ class Validator(QWidget):
                 # Prompt user to enter a different radius
                 radius, ok = QInputDialog.getInt(self, "Enter Radius", f"Please enter a radius less than {MAX_RADIUS}:")
                 if ok:
-                    self.ui.radius_.setText(str(radius))
+                    lineEdit.setText(str(radius))
                     continue  # Retry with the new radius
                 else:
                     return None  # Return None if user cancels
