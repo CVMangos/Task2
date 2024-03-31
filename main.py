@@ -187,6 +187,9 @@ class MainWindow(QtWidgets.QMainWindow):
         selects a different item from the Hough Transform combobox.
         """
         current_index = self.ui.hough_comboBox.currentIndex()
+        self.ui.label1.show()  
+        self.ui.label2.show()  
+        self.ui.label3.show() 
 
         if current_index == 0:
             # For HoughLinesP
@@ -200,21 +203,16 @@ class MainWindow(QtWidgets.QMainWindow):
             # For HoughCircles
             self.ui.label1.setText("Min Radius")  # Label for min_radius
             self.ui.label2.setText("Max Radius")  # Label for max_radius
-            self.ui.label3.setText("Min Dist")  # Label for min_dist
-            self.ui.label3.show()  # Show the label for min_dist
+            self.ui.label3.setText("Min Dist")  # Label for min_dist 
             self.ui.label4.hide() 
             self.ui.label5.hide() 
 
         else:
-            # For HoughEllipse
-            self.ui.label1.setText("Label")  
-            self.ui.label2.setText("Label")  
-            self.ui.label3.setText("Label")  
-            self.ui.label4.setText("Label")  
-            self.ui.label5.setText("Label")  
-            self.ui.label3.show()  
-            self.ui.label4.show() 
-            self.ui.label5.show() 
+            self.ui.label1.hide()  
+            self.ui.label2.hide()  
+            self.ui.label3.hide()  
+            self.ui.label4.hide() 
+            self.ui.label5.hide() 
 
 
     def handle_hough_sliders(self):
@@ -227,6 +225,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         combo_idex = self.ui.hough_comboBox.currentIndex()
         print(combo_idex)
+        self.ui.filterLable_3.show()  
+        self.ui.filterLable_4.show()  
+        self.ui.filterLable_5.show()  
+        self.ui.Slider1.show()  
+        self.ui.slider1_val.show() 
+        self.ui.Slider2.show()  
+        self.ui.slider2_val.show()  
+        self.ui.smoothingSlider.show()  
+        self.ui.smoothing_val.show()  
+        self.ui.t_low.show() 
+        self.ui.t_low_val.show() 
+        self.ui.t_high.show()  
+        self.ui.t_high_val.show()  
         if combo_idex == 0:  # HoughLinesP or HoughEllipse
             self.ui.Slider3.hide()  # Hide the third slider
             self.ui.slider3_val.hide()  # Hide the label for min_dist
@@ -235,19 +246,32 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.Slider5.hide() 
             self.ui.slider5_val.hide() 
         elif combo_idex == 1: 
-            self.ui.Slider3.show()  # Hide the third slider
-            self.ui.slider3_val.show()  # Hide the label for min_dist
+            self.ui.Slider3.show()  
+            self.ui.slider3_val.show()  
             self.ui.Slider4.hide() 
             self.ui.slider4_val.hide()  
             self.ui.Slider5.hide() 
             self.ui.slider5_val.hide()  
-        else:  # HoughCircles
-            self.ui.Slider3.show()  # Show the third slider
-            self.ui.slider3_val.show()  # Show the label for min_dist
-            self.ui.Slider4.show() 
-            self.ui.slider4_val.show()  
-            self.ui.Slider5.show() 
-            self.ui.slider5_val.show() 
+        else:  
+            self.ui.filterLable_3.hide()  
+            self.ui.filterLable_4.hide()  
+            self.ui.filterLable_5.hide()  
+            self.ui.Slider1.hide()  
+            self.ui.slider1_val.hide() 
+            self.ui.Slider2.hide()  
+            self.ui.slider2_val.hide() 
+            self.ui.Slider3.hide()  
+            self.ui.slider3_val.hide() 
+            self.ui.Slider4.hide() 
+            self.ui.slider4_val.hide()  
+            self.ui.Slider5.hide() 
+            self.ui.slider5_val.hide() 
+            self.ui.smoothingSlider.hide()  
+            self.ui.smoothing_val.hide()  
+            self.ui.t_low.hide() 
+            self.ui.t_low_val.hide() 
+            self.ui.t_high.hide()  
+            self.ui.t_high_val.hide()  
 
         self.sliders_limits()  # Set the limits for the sliders
 
@@ -266,9 +290,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         current_index = self.ui.hough_comboBox.currentIndex()
 
-        self.ui.smoothingSlider.setMinimum(0)  # Set minimum value for Threshold
-        self.ui.smoothingSlider.setMaximum(50)  # Set maximum value for Threshold
-        self.ui.smoothingSlider.setValue(1)  # Set initial value for Threshold
+        self.ui.smoothingSlider.setMinimum(0)  # Set minimum value for Smoothing
+        self.ui.smoothingSlider.setMaximum(1)  # Set maximum value for Smoothing
+        self.ui.smoothingSlider.setValue(1)  # Set initial value for Smoothing
 
         self.ui.t_low.setMinimum(1) 
         self.ui.t_low.setMaximum(100) 
@@ -291,14 +315,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.Slider2.setValue(264)  # Set initial value for Theta
 
         # For HoughCircles and HoughEllipses
-        if current_index == 1 or current_index == 2:
+        if current_index == 1:
 
             self.ui.Slider1.setMinimum(1)  # Set minimum value for min_radius
-            self.ui.Slider1.setMaximum(100)  # Set maximum value for min_radius
+            self.ui.Slider1.setMaximum(250)  # Set maximum value for min_radius
             self.ui.Slider1.setValue(60)  # Set initial value for min_radius
 
             self.ui.Slider2.setMinimum(1)  # Set minimum value for max_radius
-            self.ui.Slider2.setMaximum(100)  # Set maximum value for max_radius
+            self.ui.Slider2.setMaximum(250)  # Set maximum value for max_radius
             self.ui.Slider2.setValue(65)  # Set initial value for max_radius
 
             self.ui.Slider3.setMinimum(10)  # Set minimum value for min_dist
@@ -342,12 +366,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.slider2_val.setText(f"{max_radius_value}")
             self.ui.slider3_val.setText(f"{min_dist_value}")
 
-        elif current_index == 2:
-            # For HoughEllipse
-            min_axis_value = self.ui.Slider1.value()
-            max_axis_value = self.ui.Slider2.value()
-            self.ui.slider1_val.setText(f"{min_axis_value}")
-            self.ui.slider2_val.setText(f"{max_axis_value}")
 
     def show_error_message(self, message):
         msg_box = QMessageBox()
