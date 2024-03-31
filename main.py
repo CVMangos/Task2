@@ -7,7 +7,7 @@ from src.snake import SnakeContour
 from src.parameters import Parameters
 from src.Validator import Validator
 import cv2
-
+from src.Hough import Hough
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -344,17 +344,42 @@ class MainWindow(QtWidgets.QMainWindow):
             input_port.set_image(self.image_path)
             output_port.set_image(self.image_path, grey_flag=True)
 
-
     def apply_lineHough(self):
-        pass
-
+        output_port = self.out_ports[0]
+        self.reset_image(0)
+        hough = Hough(output_port.resized_img)
+        processed_image = hough.detect_lines(low_threshold=self.ui.t_low.value(),
+                                             high_threshold=self.ui.t_high.value(),
+                                             smoothing_degree=self.ui.smoothingSlider.value() / 10,
+                                             rho=self.ui.Slider1.value(),
+                                             theta=self.ui.Slider2.value() / 1000
+                                             )
+        output_port.original_img = processed_image
+        output_port.update_display()
 
     def apply_circleHough(self):
-        pass
-
+        output_port = self.out_ports[0]
+        self.reset_image(0)
+        hough = Hough(output_port.resized_img)
+        processed_image = hough.detect_circles(low_threshold=self.ui.t_low.value(),
+                                               high_threshold=self.ui.t_high.value(),
+                                               smoothing_degree=self.ui.smoothingSlider.value() / 10,
+                                               min_radius=self.ui.Slider1.value(),
+                                               max_radius=self.ui.Slider2.value(),
+                                               min_dist=self.ui.Slider3.value(),
+                                               )
+        output_port.original_img = processed_image
+        output_port.update_display()
 
     def apply_ellipseHough(self):
-        pass
+        input_port = self.input_ports[0]
+        output_port = self.out_ports[0]
+        img = input_port.resized_img.copy()
+        hough = Hough(img)
+        detected_ellipses = hough.hough_ellipse()
+        output_port.original_img = detected_ellipses
+        output_port.update_display()
+        print("done")
 
     def get_snake_params(self):
         """
