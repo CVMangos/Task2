@@ -6,7 +6,7 @@ import sys
 from imageViewPort import ImageViewport
 from functools import partial
 import numpy as np
-import snake.snake2 as snake_utils
+import snake.snake as snake_utils
 import matplotlib.pyplot as plt
 from Hough import Hough
 
@@ -424,7 +424,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def apply_ellipseHough(self):
-        pass
+        input_port = self.input_ports[0]
+        output_port = self.out_ports[0]
+        img = input_port.resized_img.copy()
+        hough = Hough(img)
+        detected_ellipses = hough.hough_ellipse()
+        output_port.original_img = detected_ellipses
+        output_port.update_display()
+        print("done")
 
     def apply_activeContour(self):
         points = self.out_ports[1].get_freehand_points()
@@ -432,28 +439,27 @@ class MainWindow(QtWidgets.QMainWindow):
         xs = [point[0] for point in points]
         ys = [point[1] for point in points]
         # print(f"Xs: {xs}", f"Ys: {ys}")
-        #TODO: valudate null 
+        # TODO: valudate null
         alpha = float(self.ui.alpha_.text())
         beta = float(self.ui.beta_.text())
         gamma = float(self.ui.gamma_.text())
         iterations = int(self.ui.iterations.text())
-        
+        num_points = int(self.ui.points_number.text())
+        window_size = int(self.ui.window_size.text())
+        circle_radius = int(self.ui.circle_radius.text())
+
         img = self.input_ports[1].resized_img
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        fx, fy = snake_utils.create_external_edge_force_gradients_from_img( img )
-        x,y = snake_utils.initialize_snake()
-        # contour coordinates
-        xx,yy = snake_utils.iterate_snake(
-            x = x,
-            y = y,
-            a = alpha,
-            b = beta,
-            fx = fx,
-            fy = fy,
-            gamma = gamma,
-            n_iters = iterations,
-            return_all = False
-        )
+        circle_center = img.shape[0] // 2, img.shape[1] // 2
+        snake_curve, output_img = snake_utils.active_contour_from_circle(img, circle_center, circle_radius=circle_radius,
+                                                                         alpha=alpha, beta=beta,
+                                                                         gamma=gamma, num_iterations=iterations,
+                                                                         window_size=window_size
+                                                                         , num_points=num_points)
+        output_port = self.out_ports[1]
+        output_port.original_img = output_img
+        output_port.update_display()
+        print("done")
         
 
 
